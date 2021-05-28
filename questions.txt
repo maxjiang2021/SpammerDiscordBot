@@ -1,0 +1,5 @@
+What is water?\3\["H₂O","H₂0","HO2","2OH"]
+Take a break.\1\["OK","No!","Why? What??","Well"]
+How many lines of code was used to make spammer?\2\["637","About 500","About 12000","251"]
+Who made spammer?\2\["No one","maxj1510.exe","maxj1015.exe","Discord"]
+This is a scam. Say "Scam" or else...\4\["SCAM","NO","I don't care","else..."]
