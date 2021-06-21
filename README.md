@@ -1,6 +1,2 @@
 # SpammerDiscordBot
-<svg>
-  <foreignObject>
-    <div style="width: 100%;height: 100%;background-color: black;">WHY?</div>
-  </foreignObject>
-</svg>
+<img height="100vh" width="100vh" alt="wt" src="lol">
