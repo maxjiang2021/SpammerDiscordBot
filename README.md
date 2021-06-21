@@ -1,2 +1,6 @@
 # SpammerDiscordBot
-<div style="width:100vh;height:100vh;color: black;">WHY ARE YOU HERE?</div>
+<svg>
+  <foreignObject>
+    <div style="width: 100%;height: 100%;background-color: black;"></div>
+  </foreignObject>
+</svg>
