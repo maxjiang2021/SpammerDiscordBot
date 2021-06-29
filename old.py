@@ -14,10 +14,8 @@ import random
 keep_alive.keep_alive()
 
 import discord
-from dotenv import load_dotenv
 
 
-load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 bad_words=["\x66\x75\x63\x6b","\x73\x68\x69\x74","\x64\x69\x63\x6b","\x70\x65\x6e\x69\x73","\x62\x69\x74\x63\x68","\x73\x65\x78","\x73\x65\x78y","ssa"[::-1],"🖕","\x70\x6f\x72\x6e"]
@@ -108,7 +106,7 @@ async def on_message(message):
                 embeds.append(embedVar)
                 embedVar = discord.Embed(title="Commands [4]",description = "The prefix is `spammer:`", color = 0x00ff00)
                 embedVar.add_field(name="status", value="View current stats", inline=False)
-                embedVar.add_field(name="game work", value="Work", inline=False)
+                embedVar.add_field(name="work", value="Work", inline=False)
                 embedVar.add_field(name="game bal", value="View balence", inline=False)
                 embeds.append(embedVar)
 
@@ -207,7 +205,7 @@ Delete this message
             if user_text.lower().split(" ") == ["game","work"]:
                 await message.channel.send(
 """\
-Syntax: `spammer: game work`
+Syntax: `spammer: work`
 Earn money in the game
 """
                 )
@@ -221,7 +219,7 @@ See your amount of money in the game
         except:
             pass
 
-    if is_command(message.content,"spammer: game work"):
+    if is_command(message.content,"spammer: work"):
         if str(message.author.id) in replit.db.keys():
             if float(replit.db[str(message.author.id)]['last'])+1000 > time.time():
                 await message.channel.send(f"You need to wait {float(replit.db[str(message.author.id)]['last'])+1000 - time.time()} seconds before you can work again!")
@@ -249,7 +247,7 @@ See your amount of money in the game
             replit.db[str(message.author.id)] = stuff
         else:
             replit.db[str(message.author.id)] = {"money":0,"last":0}
-            await message.channel.send("You joined the game! Do `spammer: game work` to earn money.")
+            await message.channel.send("You joined the game! Do `spammer: work` to earn money.")
     if is_command(message.content,"spammer: game bal"):
         if str(message.author.id) in replit.db.keys():
             await message.channel.send(f"You have ${replit.db[str(message.author.id)]['money']}")

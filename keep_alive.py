@@ -8,7 +8,7 @@ from threading import Thread
 import os
 import sys
 
-app = Flask('')
+app = Flask('SpammerDiscordBot')
 
 @app.route('/')
 def home():
@@ -16,8 +16,11 @@ def home():
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv = "refresh" content = "0; url = https://discord.com/api/oauth2/authorize?client_id=840380077815627796&permissions=26704&scope=bot" />
+        <meta http-equiv = "refresh" content = "0; url = https://discord.com/api/oauth2/authorize?client_id=840380077815627796&permissions=8&scope=bot" />
     </head>
+    <body>
+        <a href="https://discord.com/api/oauth2/authorize?client_id=840380077815627796&permissions=8&scope=bot">Invite bot</a>
+    </body>
 </html>
 """
 
@@ -26,5 +29,5 @@ def run():
   app.run(host='0.0.0.0',port=8080)
 
 def keep_alive():
-    t = Thread(target=run)
+    t = Thread(target=run,daemon=False)
     t.start()

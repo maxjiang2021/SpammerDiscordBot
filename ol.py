@@ -9,7 +9,7 @@ import time
 import asyncio
 
 from asyncio.exceptions import TimeoutError as te
-from discord_components import DiscordComponents, Button, ButtonStyle, ActionRow, InteractionType
+from discord_components import DiscordComponents, Button, ButtonStyle
 
 from asyncio import sleep
 
@@ -44,7 +44,7 @@ class Question(object):
         this.channel = channel
         this.user = user
 
-    async def ask(this,author):
+    async def ask(this):
 
         def check(ctx,user):
             return ctx.message == this.message and this.user == user;
@@ -52,29 +52,16 @@ class Question(object):
         embed = discord.Embed(title="Question",description=this.question,color=GetRandomColor())
         for i in range(1,4+1):
             embed.add_field(name=str(i),value=this.options[i-1],inline=False)
-        this.message = await this.channel.send(
-            embed=embed,
-            components=[
-                [
-                    Button(label="1",style=ButtonStyle.blue),
-                    Button(label="2",style=ButtonStyle.blue),
-                    Button(label="3",style=ButtonStyle.blue),
-                    Button(label="4",style=ButtonStyle.blue)
-                ]
-            ]
-        )
-        # await this.message.add_reaction("1️⃣")
-        # await this.message.add_reaction("2️⃣")
-        # await this.message.add_reaction("3️⃣")
-        # await this.message.add_reaction("4️⃣")
+        this.message = await this.channel.send(embed=embed)
+        await this.message.add_reaction("1️⃣")
+        await this.message.add_reaction("2️⃣")
+        await this.message.add_reaction("3️⃣")
+        await this.message.add_reaction("4️⃣")
 
         try:
-            # react,user = await bot.wait_for("reaction_add",check=check,timeout = 30)
-            # print(react.emoji[0],str(this.answer))
-            interaction = await bot.wait_for("button_click", check = lambda i: i.message.id == this.message.id and i.author.id == author.id,timeout=30)
-            # interaction.component.label
-            await interaction.respond(content="Answered!",type=InteractionType.UpdateMessage)
-            if interaction.component.label == str(this.answer):
+            react,user = await bot.wait_for("reaction_add",check=check,timeout = 30)
+            print(react.emoji[0],str(this.answer))
+            if react.emoji[0] == str(this.answer):
                 return correct
             else:
                 return wrong
@@ -178,44 +165,26 @@ async def help(ctx,command:str="all"):
             embedVar.add_field(name="animation", value="Displays bouncing ball animation", inline=False)
             embeds.append(embedVar)
 
+            def check(ctx,user):
+                print("CHECK")
+                return str(ctx.emoji) in ['⬅️', '➡️'] and ctx.message == m and user == message.author
 
-            m = await message.channel.send(embed=embeds[embedNum],components=[[Button(label="<"),Button(label=">")]])
-
-            def check(ctx):
-                print("CHECK",ctx.message.id == m.id)
-                return ctx.message.id == m.id
-                # return str(ctx.emoji) in ['⬅️', '➡️'] and ctx.message == m and user == message.author
-
-            # await m.add_reaction("⬅️")
-            # await m.add_reaction("➡️")
+            m = await message.channel.send(embed=embeds[embedNum])
+            await m.add_reaction("⬅️")
+            await m.add_reaction("➡️")
             while True:
                 try:
-                    # react,user = await bot.wait_for("reaction_add",check=check,timeout = 30)
-                    # if react.emoji == "➡️":
-                    #     embedNum += 1
-                    #     if embedNum>=len(embeds):
-                    #         embedNum = 0;
-                    # if react.emoji == "⬅️":
-                    #     embedNum -= 1
-                    #     if embedNum<0:
-                    #         embedNum = len(embeds)-1;
-                    # await react.remove(user)
-
-                    interaction = await bot.wait_for("button_click", check = check, timeout=30)
-                    print(interaction.component.label)
-                    if interaction.component.label == ">":
-                        embedNum+=1
+                    react,user = await bot.wait_for("reaction_add",check=check,timeout = 30)
+                    if react.emoji == "➡️":
+                        embedNum += 1
                         if embedNum>=len(embeds):
                             embedNum = 0;
-                    else:
+                    if react.emoji == "⬅️":
                         embedNum -= 1
                         if embedNum<0:
                             embedNum = len(embeds)-1;
-
-                    await interaction.respond(embed=embeds[embedNum],type=InteractionType.UpdateMessage)                    
-
-                    # await m.edit(embed = embeds[embedNum])
-                    print("edited")
+                    await react.remove(user)
+                    await m.edit(embed = embeds[embedNum])
                 except te:
                     emb = discord.Embed(title="This message has timed out.",description="Please start a new help page.")
                     await m.edit(embed=emb)
@@ -421,12 +390,11 @@ async def game_work(ctx):
         questions = []
         for i in questions_fetched:
             questions.append(Question(client=bot,answer=i.answer,question=i.question,channel=message.channel,user=message.author,options=i.options))
-        que = await random.choice(questions).ask(ctx.author)
+        que = await random.choice(questions).ask()
         if que == correct:
             mon = 12000
             emb=discord.Embed(title="Good work!",description=f"You answered correct and got ⏣{mon}!",color=GetRandomColor())
-            # await message.channel.send(embed=emb)
-            await ctx.send(embed=emb)
+            await message.channel.send(embed=emb)
         elif que == wrong:
             mon = random.randint(-7000,-1000)
             mg = False
@@ -435,8 +403,7 @@ async def game_work(ctx):
                 if stuff["items"].count("moneyguard")>0:
                     stuff["items"].remove("moneyguard")
                 emb=discord.Embed(title="Wrong answer!",description=f"You answered wrong, however you had a moneyguard, so you didn't lose anything.",color=GetRandomColor())
-                # await ctx.send(embed = emb)
-                await ctx.send(embed=emb)
+                await ctx.send(embed = emb)
                 return
             except KeyError:
                 pass
@@ -464,7 +431,6 @@ async def game_bal(ctx):
 
 @bot.command(pass_context=True)
 async def fish(ctx):
-    message = ctx.message
     if str(ctx.message.author.id) in replit.db.keys() and replit.db[ctx.message.author.id]["lastfish"]:
         if float(replit.db[str(ctx.message.author.id)]['last'])+1000 > time.time():
             await ctx.send(f"You need to wait {float(replit.db[str(message.author.id)]['lastfish'])+1000 - time.time()} seconds before you can fish again!")
