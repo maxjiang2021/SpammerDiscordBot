@@ -134,9 +134,9 @@ bot.remove_command("help")
 @bot.command(pass_context=True)
 async def help(ctx,command:str="all"):
     message = ctx.message
-    if not message.guild:
-        await message.channel.send("I'm sorry, but this command in a DM is not supported anymore and can cause issues.")
-        return
+    # if not message.guild:
+    #     await message.channel.send("I'm sorry, but this command in a DM is not supported anymore and can cause issues.")
+    #     return
     try:
         # user_text=message.content[13:].strip()
         if command=="all":
@@ -408,9 +408,9 @@ Buy item that you can view in the shop.
 @bot.command(name="work",pass_context=True)
 async def game_work(ctx):
     message = ctx.message
-    if not message.guild:
-        await message.channel.send("I'm sorry, but this command in a DM is not supported anymore and can cause issues.")
-        return
+    # if not message.guild:
+    #     await message.channel.send("I'm sorry, but this command in a DM is not supported anymore and can cause issues.")
+    #     return
     if str(message.author.id) in replit.db.keys():
         if float(replit.db[str(message.author.id)]['last'])+1000 > time.time():
             await message.channel.send(f"You need to wait {float(replit.db[str(message.author.id)]['last'])+1000 - time.time()} seconds before you can work again!")
@@ -970,10 +970,10 @@ async def timer(ctx,seconds:int,mins:int=0,hours:int=0):
         now = datetime.now()
         remaining = end - now
         if remaining < dt.timedelta(0,0,0,0,0,0,):
-            await message.edit(content=f"Time's up!")
             break
         await message.edit(content=f"Remaining: {remaining}")
         await asyncio.sleep(2)
+    await message.edit(content=f"Time's up!")
 @timer.error
 async def timer_error(ctx,error):
     if isinstance(error,commands.BadArgument) or isinstance(error,commands.ArgumentParsingError) or isinstance(error,commands.MissingRequiredArgument) or isinstance(error,commands.TooManyArguments):
