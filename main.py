@@ -176,6 +176,7 @@ async def help(ctx,command:str="all"):
             embedVar.add_field(name="stopwatch_start", value="Start stopwatch", inline=False)
             embedVar.add_field(name="stopwatch_get", value="Get stopwatch time", inline=False)
             embedVar.add_field(name="animation", value="Displays bouncing ball animation", inline=False)
+            embedVar.add_field(name="counter", value="Counter", inline=False)
             embeds.append(embedVar)
 
 
@@ -398,6 +399,15 @@ View shop
 """\
 Syntax: `spammer: buy`
 Buy item that you can view in the shop.
+"""
+            )
+        elif command == "counter":
+            await message.channel.send(
+"""\
+Syntax: `spammer: counter`
+Shows a counter. Press + to increment or - to decrement.
+Note: after 30 secs of inactivity for the buttons, the message will time out, meaning that the buttons will not work anymore. 
+To prevent this, click the "Keep Alive" button every once in a while to prevent inactivity.
 """
             )
         else:
@@ -629,7 +639,7 @@ async def manage(ctx,command:str,password:str):
 @bot.command(pass_context=True)
 async def status(ctx):
     message = ctx.message
-    emb = discord.Embed(title="Spammer stats",description="Lines of code: about 900",color=GetRandomColor())
+    emb = discord.Embed(title="Spammer stats",description="Lines of code: about 1100",color=GetRandomColor())
     emb.add_field(name="CPU%",value=str(psutil.cpu_percent()))
     emb.add_field(name="MEMORY%",value=str(psutil.virtual_memory().percent))
     emb.add_field(name="#SERVERS",value=str(len(bot.guilds)))
@@ -1115,8 +1125,42 @@ async def animation(ctx):
 
 @bot.command(pass_context=True)
 async def testcomp(ctx):
-    await ctx.send("Click on the button!",components=[Button(label="test",style = ButtonStyle.blue)])
-    interaction = await bot.wait_for("button_click", check = lambda i: i.component.label.startswith("test"))
-    await interaction.respond(content = "Button clicked!")
+    c=0
+    m = await ctx.send("Click on the button!",components=[Button(label="Button",style = ButtonStyle.blue)])
+    def check(ctx):
+        return ctx.message.id == m.id
+    try:
+        while True:
+            interaction = await bot.wait_for("button_click", check = check ,timeout=10)
+            c+=1
+            await interaction.respond(content = f"You clicked the button {c} times.", type=InteractionType.UpdateMessage)
+    except te:
+        await m.edit(content=f"No one clicked the button anymore. Clicked {c} times.")
+@bot.command(pass_context=True)
+async def counter(ctx):
+    c=0
+    m = await ctx.send(f"Number: `{c}`",components=[
+            [                
+                Button(label="+",style = ButtonStyle.blue),
+                Button(label="-",style = ButtonStyle.blue),
+                Button(label="Keep alive",style = ButtonStyle.blue)
+            ]
+        ]
+    )
+
+    def check(ctx):
+        return ctx.message.id == m.id
+    try:
+        while True:
+            interaction = await bot.wait_for("button_click", check = check ,timeout=30)
+            if interaction.component.label == "+":
+                c+=1
+            elif interaction.component.label == "-":
+                c-=1
+            else:
+                pass
+            await interaction.respond(content = f"Number: `{c}`", type=InteractionType.UpdateMessage)
+    except te:
+        await m.edit(content=f"Timeout! To prevent this click \"Keep alive\" every once in a while. Clicked `{c}` times.")
 
 bot.run(TOKEN)
